@@ -53,6 +53,8 @@ The main class that provides audio control functionalities. It uses the `PacmdEx
 
 ## Example Usage
 ```python
+from simpleaudiocontroller import AudioController
+
 # Create an AudioController object
 audio_controller = AudioController()
 
