@@ -2,7 +2,7 @@ import re
 import subprocess
 from typing import List, Union
 
-from simpleaudiocontroller import utils
+from . import utils
 
 
 class PacmdExecutor:
@@ -32,7 +32,12 @@ class SearchDevices:
             lines = [line for line in device_txt.split("\n")]
             is_current_device = "*" in lines[0]
             index = utils.get_number(lines[0])
-            name = " ".join(lines[1].split(" ")[1:]).strip()
+            name = (
+                " ".join(lines[1].split(" ")[1:])
+                .strip()
+                .replace("<", "")
+                .replace(">", "")
+            )
             devices.append(
                 Device(index=index, name=name, is_current_device=is_current_device)
             )

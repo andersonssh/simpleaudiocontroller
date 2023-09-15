@@ -1,1 +1,1 @@
-from .controller import AudioController
+from .controller import AudioController, Device
