@@ -1,6 +1,6 @@
 from conftest import mock_subprocess_run
 
-from simpleaudiocontroller import SearchDevices, DeviceType
+from simpleaudiocontroller import SearchDevices, DeviceTypes
 from unittest.mock import patch
 
 
@@ -83,7 +83,7 @@ def test_get_current_headphone():
 @patch("subprocess.run", mock_subprocess_run)
 def test_get_microphone_by_name():
     device = SearchDevices().get_device_by_name(
-        "alsa_output.pci-0000_01_00.1.hdmi-stereo-extra2", DeviceType.MICROPHONE)
+        "alsa_output.pci-0000_01_00.1.hdmi-stereo-extra2", DeviceTypes.MICROPHONE)
     assert device.dict() == {
         "index": "4",
         "is_current_device": False,
@@ -95,7 +95,7 @@ def test_get_microphone_by_name():
 @patch("subprocess.run", mock_subprocess_run)
 def test_get_headphone_by_name():
     device = SearchDevices().get_device_by_name(
-        "alsa_output.pci-0000_01_00.1.hdmi-stereo-extra2", DeviceType.HEADPHONE)
+        "alsa_output.pci-0000_01_00.1.hdmi-stereo-extra2", DeviceTypes.HEADPHONE)
     assert device.dict() == {
         "index": "4",
         "is_current_device": False,

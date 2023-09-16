@@ -6,7 +6,7 @@ from . import utils
 from enum import Enum
 
 
-class DeviceType(str, Enum):
+class DeviceTypes(str, Enum):
     HEADPHONE = "headphone"
     MICROPHONE = "microphone"
 
@@ -19,7 +19,7 @@ class PacmdExecutor:
 
 
 class Device:
-    def __init__(self, index: str, name: str, type: DeviceType, is_current_device: bool):
+    def __init__(self, index: str, name: str, type: DeviceTypes, is_current_device: bool):
         self.index = index
         self.name = name
         self.is_current_device = is_current_device
@@ -42,7 +42,7 @@ class SearchDevices:
     def __init__(self):
         self.pacmd = PacmdExecutor()
 
-    def _search(self, text_stdout: str, device_type: DeviceType) -> List[Device]:
+    def _search(self, text_stdout: str, device_type: DeviceTypes) -> List[Device]:
         raw_devices = self._text_stdout_parse(text_stdout)
         devices = []
         for device_txt in raw_devices:
@@ -62,11 +62,11 @@ class SearchDevices:
 
     def get_headphones(self) -> List[Device]:
         text_stdout = self.pacmd.execute(["list-sinks"]).stdout.decode("utf-8")
-        return self._search(text_stdout, DeviceType.HEADPHONE)
+        return self._search(text_stdout, DeviceTypes.HEADPHONE)
 
     def get_microphones(self) -> List[Device]:
         text_stdout = self.pacmd.execute(["list-sources"]).stdout.decode("utf-8")
-        return self._search(text_stdout, DeviceType.MICROPHONE)
+        return self._search(text_stdout, DeviceTypes.MICROPHONE)
 
     def get_current_headphone(self) -> Union[Device, None]:
         headphones = self.get_headphones()
@@ -82,11 +82,11 @@ class SearchDevices:
                 return microphone
         return None
 
-    def get_device_by_name(self, name: str, device_type: DeviceType) -> Union[Device, None]:
+    def get_device_by_name(self, name: str, device_type: DeviceTypes) -> Union[Device, None]:
         devices = []
-        if device_type == DeviceType.HEADPHONE:
+        if device_type == DeviceTypes.HEADPHONE:
             devices = self.get_headphones()
-        elif device_type == DeviceType.MICROPHONE:
+        elif device_type == DeviceTypes.MICROPHONE:
             devices = self.get_microphones()
         for device in devices:
             if device.name == name:
@@ -123,9 +123,9 @@ class AudioController(SearchDevices):
         if not device:
             return False
 
-        if device.type == DeviceType.HEADPHONE:
+        if device.type == DeviceTypes.HEADPHONE:
             execution = self.pacmd.execute(["set-default-sink", device.index])
-        elif device.type == DeviceType.MICROPHONE:
+        elif device.type == DeviceTypes.MICROPHONE:
             execution = self.pacmd.execute(["set-default-source", device.index])
         else:
             return False
