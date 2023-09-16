@@ -19,11 +19,11 @@ class PacmdExecutor:
 
 
 class Device:
-    def __init__(self, index: str, name: str, type: DeviceTypes, is_current_device: bool):
+    def __init__(self, index: str, name: str, type_: DeviceTypes, is_current_device: bool):
         self.index = index
         self.name = name
         self.is_current_device = is_current_device
-        self.type = type.value
+        self.type = type_.value
 
     def __repr__(self):
         return (f"Device(index={self.index}, device={self.name},"
@@ -56,7 +56,7 @@ class SearchDevices:
                 .replace(">", "")
             )
             devices.append(
-                Device(index=index, name=name, type=device_type, is_current_device=is_current_device)
+                Device(index=index, name=name, type_=device_type, is_current_device=is_current_device)
             )
         return devices
 
