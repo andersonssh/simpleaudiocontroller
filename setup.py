@@ -4,7 +4,7 @@ with open("README.md", "r") as f:
     long_description = f.read()
 setup(
     name="simpleaudiocontroller",
-    version="1.0.3",
+    version="2.0.0",
     description="Simple interface for controlling audio devices",
     long_description=long_description,
     long_description_content_type="text/markdown",

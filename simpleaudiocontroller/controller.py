@@ -55,12 +55,8 @@ class SearchDevices:
         microphones = self.get_microphones()
         return self._get_device_by("is_current_device", True, microphones)
 
-    def get_device_by_name(self, name: str, device_type: DeviceTypes) -> Union[Device, None]:
-        devices = []
-        if device_type == DeviceTypes.HEADPHONE:
-            devices = self.get_headphones()
-        elif device_type == DeviceTypes.MICROPHONE:
-            devices = self.get_microphones()
+    def get_device_by_name(self, name: str) -> Union[Device, None]:
+        devices = self.get_headphones() + self.get_microphones()
         return self._get_device_by("name", name, devices)
 
     def _search(self, text_stdout: str, device_type: DeviceTypes) -> List[Device]:
