@@ -11,11 +11,10 @@ class DeviceTypes(str, Enum):
     MICROPHONE = "microphone"
 
 
-class PacmdExecutor:
-    def execute(self, exec_args: list):
-        return subprocess.run(
-            ["pacmd"] + exec_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
+def pacmd(exec_args: list):
+    return subprocess.run(
+        ["pacmd"] + exec_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
 
 
 class Device:
@@ -39,8 +38,30 @@ class Device:
 
 
 class SearchDevices:
-    def __init__(self):
-        self.pacmd = PacmdExecutor()
+
+    def get_headphones(self) -> List[Device]:
+        text_stdout = pacmd(["list-sinks"]).stdout.decode("utf-8")
+        return self._search(text_stdout, DeviceTypes.HEADPHONE)
+
+    def get_microphones(self) -> List[Device]:
+        text_stdout = pacmd(["list-sources"]).stdout.decode("utf-8")
+        return self._search(text_stdout, DeviceTypes.MICROPHONE)
+
+    def get_current_headphone(self) -> Union[Device, None]:
+        headphones = self.get_headphones()
+        return self._get_device_by("is_current_device", True, headphones)
+
+    def get_current_microphone(self) -> Union[Device, None]:
+        microphones = self.get_microphones()
+        return self._get_device_by("is_current_device", True, microphones)
+
+    def get_device_by_name(self, name: str, device_type: DeviceTypes) -> Union[Device, None]:
+        devices = []
+        if device_type == DeviceTypes.HEADPHONE:
+            devices = self.get_headphones()
+        elif device_type == DeviceTypes.MICROPHONE:
+            devices = self.get_microphones()
+        return self._get_device_by("name", name, devices)
 
     def _search(self, text_stdout: str, device_type: DeviceTypes) -> List[Device]:
         raw_devices = self._text_stdout_parse(text_stdout)
@@ -59,38 +80,6 @@ class SearchDevices:
                 Device(index=index, name=name, type_=device_type, is_current_device=is_current_device)
             )
         return devices
-
-    def get_headphones(self) -> List[Device]:
-        text_stdout = self.pacmd.execute(["list-sinks"]).stdout.decode("utf-8")
-        return self._search(text_stdout, DeviceTypes.HEADPHONE)
-
-    def get_microphones(self) -> List[Device]:
-        text_stdout = self.pacmd.execute(["list-sources"]).stdout.decode("utf-8")
-        return self._search(text_stdout, DeviceTypes.MICROPHONE)
-
-    def get_current_headphone(self) -> Union[Device, None]:
-        headphones = self.get_headphones()
-        for headphone in headphones:
-            if headphone.is_current_device:
-                return headphone
-        return None
-
-    def get_current_microphone(self) -> Union[Device, None]:
-        microphones = self.get_microphones()
-        for microphone in microphones:
-            if microphone.is_current_device:
-                return microphone
-        return None
-
-    def get_device_by_name(self, name: str, device_type: DeviceTypes) -> Union[Device, None]:
-        devices = []
-        if device_type == DeviceTypes.HEADPHONE:
-            devices = self.get_headphones()
-        elif device_type == DeviceTypes.MICROPHONE:
-            devices = self.get_microphones()
-        for device in devices:
-            if device.name == name:
-                return device
 
     @classmethod
     def _text_stdout_parse(cls, text_stdout: str) -> list:
@@ -113,20 +102,24 @@ class SearchDevices:
             devices.append("\n".join(lines))
         return devices
 
+    @staticmethod
+    def _get_device_by(key: str, value, devices: List[Device]) -> Union[Device, None]:
+        for device in devices:
+            if getattr(device, key) == value:
+                return device
+        return None
+
 
 class AudioController(SearchDevices):
-    def __init__(self):
-        super().__init__()
-        self.pacmd = PacmdExecutor()
 
     def set_default_device(self, device: Device) -> bool:
         if not device:
             return False
 
         if device.type == DeviceTypes.HEADPHONE:
-            execution = self.pacmd.execute(["set-default-sink", device.index])
+            execution = pacmd(["set-default-sink", device.index])
         elif device.type == DeviceTypes.MICROPHONE:
-            execution = self.pacmd.execute(["set-default-source", device.index])
+            execution = pacmd(["set-default-source", device.index])
         else:
             return False
 

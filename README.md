@@ -1,5 +1,4 @@
 
-```markdown
 # Simple Audio Controller
 
 The Simple Audio Controller is a Python module that provides a simple interface for interacting with audio devices and controlling audio settings using the PulseAudio command-line tool 'pacmd'.
