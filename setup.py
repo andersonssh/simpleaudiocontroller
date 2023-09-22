@@ -4,7 +4,7 @@ with open("README.md", "r") as f:
     long_description = f.read()
 setup(
     name="simpleaudiocontroller",
-    version="2.0.0",
+    version="2.1.0",
     description="Simple interface for controlling audio devices",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -26,9 +26,9 @@ setup(
         ]
     },
     packages=["simpleaudiocontroller"],
-    # entry_points={
-    #     "console_scripts": [
-    #         "simpleaudiocontroller = simpleaudiocontroller.main:main"
-    #     ]
-    # },
+    entry_points={
+        "console_scripts": [
+            "simpleaudiocontroller = simpleaudiocontroller.__main__:main"
+        ]
+    }
 )
